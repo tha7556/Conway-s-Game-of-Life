@@ -8,16 +8,18 @@ namespace Game_of_Life {
     /// This is the main type for your game.
     /// </summary>
     public class GameOfLife : Game {
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
-        int squareSize = 10;
-        bool[][] squares;
-        bool[][] lastTick;
-        Texture2D whiteSquare, blackSquare;
-        Random random = new Random();
-        int width, height;
-        bool paused = true;
-        int iteration = 0;
+        private GraphicsDeviceManager graphics;
+        private SpriteBatch spriteBatch;
+        private int iteration = 0;
+        private Texture2D whiteSquare, blackSquare;
+        private readonly Random random = new Random();
+        private int squareSize = 10;
+        private bool[][] lastTick;
+
+        public bool[][] Squares;
+        public int Width, Height;
+        public bool IsPaused = true;
+
         public GameOfLife() {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -45,15 +47,15 @@ namespace Game_of_Life {
                 data[i] = Color.Black;
             }
             blackSquare.SetData(data);
-            height = graphics.GraphicsDevice.Viewport.Height / squareSize;
-            width = graphics.GraphicsDevice.Viewport.Width / squareSize;
-            squares = new bool[graphics.GraphicsDevice.Viewport.Height / squareSize][];
+            Height = graphics.GraphicsDevice.Viewport.Height / squareSize;
+            Width = graphics.GraphicsDevice.Viewport.Width / squareSize;
+            Squares = new bool[graphics.GraphicsDevice.Viewport.Height / squareSize][];
             lastTick = new bool[graphics.GraphicsDevice.Viewport.Height / squareSize][];
             
-            for (int i = 0; i < squares.Length; i++) {
-                squares[i] = new bool[width];
-                lastTick[i] = new bool[width];
-                for(int j = 0; j < width; j++) {
+            for (int i = 0; i < Squares.Length; i++) {
+                Squares[i] = new bool[Width];
+                lastTick[i] = new bool[Width];
+                for(int j = 0; j < Width; j++) {
                     lastTick[i][j] = false;
                 }
             }
@@ -88,48 +90,46 @@ namespace Game_of_Life {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             if (Keyboard.GetState().IsKeyDown(Keys.Space)) {
-                paused = true;    
+                IsPaused = true;    
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Enter))
-                    paused = false;
+                    IsPaused = false;
             HandleClick();
-            if (!paused && iteration++ == 3) {
+            if (!IsPaused && iteration++ == 3) {
                 CalculateNextTick();
                 iteration = 0;
             }
             base.Update(gameTime);
         }
         private void CalculateNextTick() {
-            for(int i = 0; i < squares.Length; i++) {
-                for(int j = 0; j < squares[0].Length; j++) {
+            for(int i = 0; i < Squares.Length; i++) {
+                for(int j = 0; j < Squares[0].Length; j++) {
                     int number = GetNumberOfNeighbors(j, i);
                     if (lastTick[i][j]) {
                         if (number < 2)
-                            squares[i][j] = false;
+                            Squares[i][j] = false;
                         else if (number > 3)
-                            squares[i][j] = false;
+                            Squares[i][j] = false;
                     }
                     else if (number == 3)
-                        squares[i][j] = true;
+                        Squares[i][j] = true;
                 }
             }
-            for(int i = 0; i < height; i++) {
-                for (int j = 0; j < width; j++)
-                    lastTick[i][j] = squares[i][j];
-            }
+            for(int i = 0; i < Height; i++)
+                Squares[i].CopyTo(lastTick[i], 0);
         }
         private int GetNumberOfNeighbors(int x, int y) {
             int total = 0;
-            if (y < 0 || y > height)
+            if (y < 0 || y > Height)
                 return total;
-            if (x < 0 || x > width)
+            if (x < 0 || x > Width)
                 return total;
             //Horizontal
             if(x > 1) {
                 if (lastTick[y][x - 1])
                     total++;
             }
-            if(x < width - 1) {
+            if(x < Width - 1) {
                 if (lastTick[y][x + 1])
                     total++;
             }
@@ -138,7 +138,7 @@ namespace Game_of_Life {
                 if (lastTick[y - 1][x])
                     total++;
             }
-            if(y < height - 1) {
+            if(y < Height - 1) {
                 if (lastTick[y + 1][x])
                     total++;
             }
@@ -148,40 +148,40 @@ namespace Game_of_Life {
                     if (lastTick[y - 1][x - 1])
                         total++;
                 }
-                if(y < height - 1) {
+                if(y < Height - 1) {
                     if (lastTick[y + 1][x - 1])
                         total++;
                 }
             }
-            if(x < width - 1) {
+            if(x < Width - 1) {
                 if(y > 1) {
                     if (lastTick[y - 1][x + 1])
                         total++;
                 }
-                if(y < height - 1) {
+                if(y < Height - 1) {
                     if (lastTick[y + 1][x + 1])
                         total++;
                 }
             }
             return total;
         }
-        private bool IsMouseInWindow(int x, int y) {
-            Point pos = new Point(x, y);
+        private bool IsMouseInWindow() {
+            Point pos = new Point(Mouse.GetState().X, Mouse.GetState().Y);
             return GraphicsDevice.Viewport.Bounds.Contains(pos);
         }
         private void HandleClick() {
             MouseState state = Mouse.GetState();
-            if (!IsMouseInWindow(state.X, state.Y))
+            if (!IsMouseInWindow())
                 return;
             int x = state.X / squareSize;
             int y = state.Y / squareSize;
             if (state.LeftButton == ButtonState.Pressed) {
                 lastTick[y][x] = true;
-                squares[y][x] = true;
+                Squares[y][x] = true;
             }
             if (state.RightButton == ButtonState.Pressed) {
                 lastTick[y][x] = false;
-                squares[y][x] = false;
+                Squares[y][x] = false;
             }
 
         }
@@ -194,10 +194,10 @@ namespace Game_of_Life {
             spriteBatch.Begin();
             int x = 0;
             int y = 0;
-            for(int i = 0; i < squares.Length; i++) {
-                for(int j = 0; j < squares[0].Length; j++) {
+            for(int i = 0; i < Squares.Length; i++) {
+                for(int j = 0; j < Squares[0].Length; j++) {
                     Vector2 position = new Vector2(x, y);
-                    if (squares[i][j]) {
+                    if (Squares[i][j]) {
                         spriteBatch.Draw(whiteSquare, position, Color.White);
                     }
                     else {
