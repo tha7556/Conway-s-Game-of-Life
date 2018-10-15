@@ -7,7 +7,7 @@ namespace Game_of_Life {
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    public class Game1 : Game {
+    public class GameOfLife : Game {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         int squareSize = 10;
@@ -18,7 +18,7 @@ namespace Game_of_Life {
         int width, height;
         bool paused = true;
         int iteration = 0;
-        public Game1() {
+        public GameOfLife() {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
@@ -54,23 +54,9 @@ namespace Game_of_Life {
                 squares[i] = new bool[width];
                 lastTick[i] = new bool[width];
                 for(int j = 0; j < width; j++) {
-                    //lastTick[i][j] = random.NextDouble() > .5;
                     lastTick[i][j] = false;
                 }
             }
-            //lastTick[10][10] = true;
-            squares[11][10] = true;
-            //lastTick[12][10] = true;
-
-            //lastTick[11][12] = true;
-            //lastTick[10][12] = true;
-           // lastTick[9][12] = true;
-
-            //lastTick[13][8] = true;
-            //lastTick[14][8] = true;
-
-            //lastTick[14][7] = true;
-            Console.WriteLine(string.Format("width: {0}, height: {1}", width, graphics.GraphicsDevice.Viewport.Height / squareSize));
             base.Initialize();
         }
 
@@ -168,7 +154,6 @@ namespace Game_of_Life {
                 }
             }
             if(x < width - 1) {
-                //Console.WriteLine(string.Format("x: {0}, y: {1}, width: {2}, height: {3}", x, y, width, height));
                 if(y > 1) {
                     if (lastTick[y - 1][x + 1])
                         total++;
@@ -205,10 +190,8 @@ namespace Game_of_Life {
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime) {
-            //System.Console.WriteLine("what");
             GraphicsDevice.Clear(Color.Bisque);
             spriteBatch.Begin();
-            // TODO: Add your drawing code here
             int x = 0;
             int y = 0;
             for(int i = 0; i < squares.Length; i++) {

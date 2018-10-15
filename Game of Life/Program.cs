@@ -13,7 +13,7 @@ namespace Game_of_Life {
         [STAThread]
         static void Main()
         {
-            using (Game1 game = new Game1())
+            using (GameOfLife game = new GameOfLife())
                 game.Run();
         }
     }
