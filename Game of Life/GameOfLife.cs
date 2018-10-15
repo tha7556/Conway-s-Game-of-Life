@@ -10,7 +10,12 @@ namespace Game_of_Life {
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
         private Board board;
-
+        private State state = State.Board;
+        private enum State {
+            Board,
+            Save,
+            Open
+        }
         public GameOfLife() {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -58,7 +63,8 @@ namespace Game_of_Life {
         protected override void Update(GameTime gameTime) {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            board.Update(GraphicsDevice.Viewport);
+            if(state == State.Board)
+                board.Update(GraphicsDevice.Viewport);
             base.Update(gameTime);
         }
 
@@ -70,7 +76,8 @@ namespace Game_of_Life {
             GraphicsDevice.Clear(Color.Bisque);
             spriteBatch.Begin();
 
-            board.Draw(gameTime, GraphicsDevice, spriteBatch);
+            if (state == State.Board)
+                board.Draw(gameTime, GraphicsDevice, spriteBatch);
             
             spriteBatch.End();
             base.Draw(gameTime);
