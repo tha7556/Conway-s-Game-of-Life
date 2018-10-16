@@ -43,7 +43,7 @@ namespace Game_of_Life {
         protected override void LoadContent() {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
+            
             // TODO: use this.Content to load your game content here
         }
 
@@ -73,7 +73,7 @@ namespace Game_of_Life {
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime) {
-            GraphicsDevice.Clear(Color.Bisque);
+            GraphicsDevice.Clear(Color.Black);
             spriteBatch.Begin();
 
             if (state == State.Board)
