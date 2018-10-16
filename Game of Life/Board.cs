@@ -4,17 +4,31 @@ using Microsoft.Xna.Framework.Input;
 using System;
 
 namespace Game_of_Life {
+    /// <summary>
+    /// A board for displaying Conway's Game of Life
+    /// </summary>
     public class Board {
         private int iteration = 0;
         private Texture2D whiteSquare, blackSquare;
         private readonly Random random = new Random();
         private int squareSize = 10;
         private bool[][] lastTick;
-
+        /// <summary>
+        /// The matrix of squares being displayed.
+        /// </summary>
         public bool[][] Squares;
+        /// <summary>
+        /// The dimensions of the matrix
+        /// </summary>
         public int Width, Height;
+        /// <summary>
+        /// Determines if the game should keep updating
+        /// </summary>
         public bool IsPaused = true;
-
+        /// <summary>
+        /// Initializes the textures and the matrix
+        /// </summary>
+        /// <param name="device">The Graphics device of the game</param>
         public Board(GraphicsDevice device) {
             //White texture
             whiteSquare = new Texture2D(device, squareSize, squareSize);
@@ -45,6 +59,10 @@ namespace Game_of_Life {
                 }
             }
         }
+        /// <summary>
+        /// Updates the game and handles button/mouse clicks
+        /// </summary>
+        /// <param name="viewport">The viewport of the game</param>
         public void Update(Viewport viewport) {
             if (Keyboard.GetState().IsKeyDown(Keys.Space)) {
                 IsPaused = true;
@@ -57,6 +75,9 @@ namespace Game_of_Life {
                 iteration = 0;
             }
         }
+        /// <summary>
+        /// Calculates the next tick based on the rules of the Game of Life
+        /// </summary>
         private void CalculateNextTick() {
             for (int i = 0; i < Squares.Length; i++) {
                 for (int j = 0; j < Squares[0].Length; j++) {
@@ -74,6 +95,12 @@ namespace Game_of_Life {
             for (int i = 0; i < Height; i++)
                 Squares[i].CopyTo(lastTick[i], 0);
         }
+        /// <summary>
+        /// Counts the number of on squares surrounding the coordinates
+        /// </summary>
+        /// <param name="x">The x coordinate of the square</param>
+        /// <param name="y">The y coordinate of the square</param>
+        /// <returns>The number of neighbors surronding the square</returns>
         private int GetNumberOfNeighbors(int x, int y) {
             int total = 0;
             if (y < 0 || y > Height)
@@ -121,11 +148,20 @@ namespace Game_of_Life {
             }
             return total;
         }
+        /// <summary>
+        /// Determines if the Mouse is inside of the viewport
+        /// </summary>
+        /// <param name="viewport">The viewport of the game</param>
+        /// <returns>True if the mouse is within the viewport</returns>
         private bool IsMouseInWindow(Viewport viewport) {
             Point pos = new Point(Mouse.GetState().X, Mouse.GetState().Y);
             return viewport.Bounds.Contains(pos);
         }
-        public void HandleClick(Viewport viewport) {
+        /// <summary>
+        /// Assigns left click to turning the squares on, right click to turning them off
+        /// </summary>
+        /// <param name="viewport">The viewport of the game</param>
+        private void HandleClick(Viewport viewport) {
             MouseState state = Mouse.GetState();
             if (!IsMouseInWindow(viewport))
                 return;
@@ -140,6 +176,10 @@ namespace Game_of_Life {
                 Squares[y][x] = false;
             }
         }
+        /// <summary>
+        /// Saves board to a file 
+        /// </summary>
+        /// <param name="fileName">The name of the file to save to</param>
         public void Save(string fileName) {
             string[] lines = new string[Height + 1];
             lines[0] = string.Format("#squareSize: {0}, #width: {1}, #height: {2}", squareSize, Width, Height);
@@ -153,6 +193,12 @@ namespace Game_of_Life {
             }
             System.IO.File.WriteAllLines(fileName, lines);
         }
+        /// <summary>
+        /// Draws the Board onto the screen
+        /// </summary>
+        /// <param name="gameTime">The gameTime used during draw</param>
+        /// <param name="device">The graphicsDevice of the game</param>
+        /// <param name="spriteBatch">The spriteBatch of the game</param>
         public void Draw(GameTime gameTime, GraphicsDevice device, SpriteBatch spriteBatch) {
             int x = 0;
             int y = 0;

@@ -12,9 +12,7 @@ namespace Game_of_Life {
         private Board board;
         private State state = State.Board;
         private enum State {
-            Board,
-            Save,
-            Open
+            Board
         }
         public GameOfLife() {
             graphics = new GraphicsDeviceManager(this);
